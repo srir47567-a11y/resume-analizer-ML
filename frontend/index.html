@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillMatch ML — Resume Intelligence & Job Matching</title>
+  <meta name="description" content="ML-powered Resume Intelligence, Role Classification, Job Description Matching, and Explainable Learning Roadmaps for Students and Freshers.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Background Glow Accents -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <div class="brand-text">
+          <h1>SkillMatch <span class="badge-ml">ML</span></h1>
+          <p class="tagline">Resume Intelligence & Job Matching Engine</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button id="btn-view-model-metrics" class="btn btn-outline" title="View ML Model Benchmarks & Confusion Matrix">
+          <i data-lucide="cpu"></i>
+          <span>ML Benchmarks</span>
+        </button>
+        <a href="#demo-section" class="btn btn-primary" id="btn-quick-demo">
+          <i data-lucide="play"></i>
+          <span>Quick Demo</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container" id="demo-section">
+    <!-- Input Section: Two Columns (Resume & Target JD) -->
+    <section class="input-grid">
+      <!-- Left Column: Resume Ingestion -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="file-text" class="card-icon text-indigo"></i>
+            <h2>1. Candidate Resume</h2>
+          </div>
+          <!-- Sample Preset Dropdown -->
+          <div class="sample-presets">
+            <label for="sample-resume-select">Preset:</label>
+            <select id="sample-resume-select" class="custom-select">
+              <option value="">-- Load Sample Resume --</option>
+              <option value="data_analyst">Data Analyst Fresher</option>
+              <option value="python_dev">Python Backend Student</option>
+              <option value="frontend_dev">React / Frontend Intern</option>
+              <option value="ml_engineer">ML / AI Specialist</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tabs: Upload vs Paste -->
+        <div class="tab-controls">
+          <button class="tab-btn active" id="tab-btn-file"><i data-lucide="upload-cloud"></i> File Upload (PDF/DOCX)</button>
+          <button class="tab-btn" id="tab-btn-text"><i data-lucide="edit-3"></i> Paste Text</button>
+        </div>
+
+        <!-- File Upload Zone -->
+        <div class="tab-content" id="tab-content-file">
+          <div class="drop-zone" id="resume-drop-zone">
+            <input type="file" id="resume-file-input" accept=".pdf,.docx,.txt" class="file-input-hidden">
+            <div class="drop-zone-content">
+              <div class="upload-icon-circle">
+                <i data-lucide="file-up"></i>
+              </div>
+              <p class="drop-primary">Drag & drop your resume file here</p>
+              <p class="drop-secondary">Supports <strong>PDF</strong>, <strong>DOCX</strong>, and <strong>TXT</strong> up to 10MB</p>
+              <button type="button" class="btn btn-sm btn-outline" id="btn-browse-file">Browse Files</button>
+            </div>
+            <div class="file-loaded-banner" id="file-loaded-banner" style="display: none;">
+              <i data-lucide="check-circle" class="text-emerald"></i>
+              <span id="loaded-file-name">resume.pdf</span>
+              <button type="button" class="btn-icon-clear" id="btn-clear-file" title="Clear file">&times;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paste Text Area -->
+        <div class="tab-content" id="tab-content-text" style="display: none;">
+          <textarea id="resume-text-input" class="modern-textarea" placeholder="Paste full resume text here including Summary, Skills, Projects, Experience, and Education..."></textarea>
+        </div>
+      </div>
+
+      <!-- Right Column: Target Job Description -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="briefcase" class="card-icon text-cyan"></i>
+            <h2>2. Target Job Description</h2>
+          </div>
+          <!-- Sample Preset Dropdown -->
+          <div class="sample-presets">
+            <label for="sample-jd-select">Preset:</label>
+            <select id="sample-jd-select" class="custom-select">
+              <option value="">-- Load Sample JD --</option>
+              <option value="data_analyst_jd">Junior Data Analyst</option>
+              <option value="python_backend_jd">Python Backend Developer</option>
+              <option value="frontend_jd">Frontend React Engineer</option>
+              <option value="ml_engineer_jd">Associate ML Engineer</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="card-subtitle">Paste job description or requirements to calculate match score, extract gaps, and generate roadmaps.</p>
+        <textarea id="jd-text-input" class="modern-textarea" placeholder="Paste job description text here (e.g. Required skills: Python, PostgreSQL, Docker, AWS, REST APIs...)"></textarea>
+
+        <div class="action-bar">
+          <button id="btn-run-analysis" class="btn btn-primary btn-lg btn-glow w-full">
+            <i data-lucide="zap"></i>
+            <span>Run ML Analysis & Match</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-container" id="loading-container" style="display: none;">
+      <div class="spinner-pulse"></div>
+      <p class="loading-title">Analyzing Resume with NLP & Machine Learning...</p>
+      <p class="loading-subtitle">Extracting sections, predicting roles, computing TF-IDF similarity, and identifying skill gaps.</p>
+    </div>
+
+    <!-- Results Section (Populated dynamically) -->
+    <section class="results-section" id="results-section" style="display: none;">
+      <!-- Row 1: Key Summary Metrics (Top Role, Match Score, Detected Skills Count, Gaps) -->
+      <div class="metrics-row">
+        <!-- Predicted Role Card -->
+        <div class="metric-card glass-card glow-indigo">
+          <div class="metric-label">
+            <i data-lucide="crosshair" class="text-indigo"></i>
+            <span>ML Predicted Role</span>
+          </div>
+          <div class="metric-value-lg" id="metric-top-role">Data Analyst</div>
+          <div class="metric-sub" id="metric-role-confidence">Confidence: <strong>76.4%</strong></div>
+          <div class="role-bars" id="role-probability-bars">
+            <!-- Dynamic probability bars -->
+          </div>
+        </div>
+
+        <!-- Match Score Radial Gauge -->
+        <div class="metric-card glass-card glow-cyan">
+          <div class="metric-label">
+            <i data-lucide="pie-chart" class="text-cyan"></i>
+            <span>Resume–Job Match</span>
+          </div>
+          <div class="radial-gauge-container">
+            <div class="score-circle">
+              <svg viewBox="0 0 100 100" class="circular-chart">
+                <path class="circle-bg" d="M18 2.0845 a 45 45 0 0 1 0 89.831 a 45 45 0 0 1 0 -89.831" />
+                <path id="gauge-progress" class="circle-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 45 45 0 0 1 0 89.831 a 45 45 0 0 1 0 -89.831" />
+              </svg>
+              <div class="score-text">
+                <span id="metric-match-score" class="score-number">--</span>
+                <span class="score-unit">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="metric-breakdown">
+            <span>Skill Coverage: <strong id="metric-skill-coverage">--%</strong></span>
+            <span>TF-IDF Similarity: <strong id="metric-text-sim">--%</strong></span>
+          </div>
+        </div>
+
+        <!-- Candidate Skills Summary -->
+        <div class="metric-card glass-card glow-emerald">
+          <div class="metric-label">
+            <i data-lucide="check-circle-2" class="text-emerald"></i>
+            <span>Matched Skills</span>
+          </div>
+          <div class="metric-value-lg text-emerald" id="metric-matched-count">0</div>
+          <p class="metric-sub">Skills verified in candidate profile matching JD requirements.</p>
+        </div>
+
+        <!-- Missing Gaps Summary -->
+        <div class="metric-card glass-card glow-rose">
+          <div class="metric-label">
+            <i data-lucide="alert-triangle" class="text-rose"></i>
+            <span>Missing Skill Gaps</span>
+          </div>
+          <div class="metric-value-lg text-rose" id="metric-missing-count">0</div>
+          <p class="metric-sub">Required competencies identified for targeted upskilling.</p>
+        </div>
+      </div>
+
+      <!-- Row 2: Detailed Skill Analysis (Matched vs Missing vs Bonus) -->
+      <div class="grid-2-cols">
+        <!-- Matched Skills Card -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i data-lucide="check" class="card-icon text-emerald"></i>
+              <h3>Matched Skills in Resume</h3>
+            </div>
+            <span class="badge badge-emerald" id="badge-matched-count">0 Verified</span>
+          </div>
+          <div class="chips-container" id="matched-skills-container">
+            <!-- Dynamic matched skill chips -->
+          </div>
+          
+          <!-- Bonus / Additional Skills -->
+          <div class="extra-skills-section">
+            <h4>Additional Candidate Strengths</h4>
+            <div class="chips-container" id="extra-skills-container">
+              <!-- Extra skills -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Missing Skill Gaps Card with Priority Badges -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i data-lucide="x" class="card-icon text-rose"></i>
+              <h3>Identified Skill Gaps (Prioritized)</h3>
+            </div>
+            <span class="badge badge-rose" id="badge-missing-count">0 Missing</span>
+          </div>
+          <div class="gaps-list" id="missing-skills-container">
+            <!-- Dynamic missing skills with priority badges & rationale -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Explainable Learning Roadmap -->
+      <div class="card glass-card" id="roadmap-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="compass" class="card-icon text-indigo"></i>
+            <h3>Personalized Learning Roadmap</h3>
+          </div>
+          <span class="badge badge-indigo" id="target-role-badge">Target Role: Software Engineer</span>
+        </div>
+        <p class="card-subtitle">Sequential, explainable learning pathway designed to bridge skill gaps and maximize job readiness.</p>
+        
+        <div class="roadmap-timeline" id="roadmap-timeline-container">
+          <!-- Phased steps generated dynamically -->
+        </div>
+      </div>
+
+      <!-- Row 4: Explainability & Evidence Report -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="card-title">
+            <i data-lucide="help-circle" class="card-icon text-cyan"></i>
+            <h3>Explainability & Evidence Insights</h3>
+          </div>
+          <span class="badge badge-cyan">Transparent AI</span>
+        </div>
+        <div class="explainability-grid">
+          <div class="explain-col">
+            <h4><i data-lucide="search"></i> Resume Evidence Breakdown</h4>
+            <ul class="evidence-list" id="evidence-list-container">
+              <!-- Evidence items -->
+            </ul>
+          </div>
+          <div class="explain-col">
+            <h4><i data-lucide="bar-chart-2"></i> Top Influential TF-IDF Terms</h4>
+            <div class="keyword-tags" id="influential-keywords-container">
+              <!-- Top keywords -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ML Benchmark & Evaluation Modal -->
+  <div class="modal-backdrop" id="modal-benchmarks" style="display: none;">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <div class="card-title">
+          <i data-lucide="activity" class="card-icon text-indigo"></i>
+          <h2>ML Model Evaluation & Benchmarks</h2>
+        </div>
+        <button class="btn-close-modal" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-benchmark-content">
+        <div class="spinner-pulse"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>SkillMatch ML &bull; Explainable Machine Learning & NLP for Student Career Intelligence</p>
+      <p class="tech-stack-tag">Built with Python &bull; scikit-learn &bull; TF-IDF &bull; FastAPI &bull; Vanilla JS</p>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
